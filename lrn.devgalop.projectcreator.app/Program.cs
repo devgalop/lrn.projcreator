@@ -12,7 +12,7 @@ Parametros de entrada:
 
 try
 {
-    args = new[] { "D:\\Projects\\MiPrimerProyecto", "lrn.mi_primer_proyecto", "console" };
+    //args = new[] { "D:\\Projects\\MiPrimerProyecto", "lrn.mi_primer_proyecto", "console" };
     if (args.Length < 3)
     {
         throw new ArgumentNullException("No se han declarado todas las variables necesarias para el proceso");
