@@ -24,6 +24,8 @@ try
     string projectType = args[2];
     Console.WriteLine($"Tipo de proyecto: {projectType}");
 
+    string projectTypeCap = char.ToUpper(projectType[0]) + projectType.Substring(1);
+
     CommandService commandService = new CommandService();
 
     if (!Directory.Exists(folderSelected))
@@ -36,13 +38,13 @@ try
         $"dotnet new sln -n {projectName}",
         $"dotnet new classlib -n {projectName}.Core",
         $"dotnet new classlib -n {projectName}.Infrastructure",
-        $"dotnet new {projectType} -n {projectName}.App",
+        $"dotnet new {projectType} -n {projectName}.{projectTypeCap}",
         $"dotnet sln add ./{projectName}.Core/{projectName}.Core.csproj",
         $"dotnet sln add ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet sln add ./{projectName}.App/{projectName}.App.csproj",
+        $"dotnet sln add ./{projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj",
         $"dotnet add {projectName}.Core/{projectName}.Core.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet add {projectName}.App/{projectName}.App.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet add {projectName}.App/{projectName}.App.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
+        $"dotnet add {projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
+        $"dotnet add {projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
         $"mkdir {folderSelected}\\{projectName}.Core\\Extensions {folderSelected}\\{projectName}.Core\\Services {folderSelected}\\{projectName}.Core\\Interfaces {folderSelected}\\{projectName}.Core\\Models"
     };
     
