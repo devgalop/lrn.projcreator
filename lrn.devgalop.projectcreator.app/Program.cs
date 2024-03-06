@@ -43,6 +43,7 @@ try
         $"dotnet add {projectName}.Core/{projectName}.Core.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
         $"dotnet add {projectName}.App/{projectName}.App.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
         $"dotnet add {projectName}.App/{projectName}.App.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
+        $"mkdir {folderSelected}\\{projectName}.Core\\Extensions {folderSelected}\\{projectName}.Core\\Services {folderSelected}\\{projectName}.Core\\Interfaces {folderSelected}\\{projectName}.Core\\Models"
     };
     
     foreach (var command in commands)
