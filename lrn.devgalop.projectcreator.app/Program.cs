@@ -39,13 +39,20 @@ try
         $"dotnet new classlib -n {projectName}.Core",
         $"dotnet new classlib -n {projectName}.Infrastructure",
         $"dotnet new {projectType} -n {projectName}.{projectTypeCap}",
+        $"dotnet new xunit -n {projectName}.Tests",
         $"dotnet sln add ./{projectName}.Core/{projectName}.Core.csproj",
         $"dotnet sln add ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
         $"dotnet sln add ./{projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj",
+        $"dotnet sln add ./{projectName}.Tests/{projectName}.Tests.csproj",
         $"dotnet add {projectName}.Core/{projectName}.Core.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
         $"dotnet add {projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
         $"dotnet add {projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
-        $"mkdir {folderSelected}\\{projectName}.Core\\Extensions {folderSelected}\\{projectName}.Core\\Services {folderSelected}\\{projectName}.Core\\Interfaces {folderSelected}\\{projectName}.Core\\Models"
+        $"dotnet add {projectName}.Tests/{projectName}.Tests.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
+        $"dotnet add {projectName}.Tests/{projectName}.Tests.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
+        $"dotnet add {projectName}.Tests/{projectName}.Tests.csproj reference ./{projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj",
+        $"mkdir {folderSelected}\\{projectName}.Core\\Extensions {folderSelected}\\{projectName}.Core\\Services {folderSelected}\\{projectName}.Core\\Interfaces {folderSelected}\\{projectName}.Core\\Models {folderSelected}\\Docker",
+        $"cd > Dockerfile"
+
     };
     
     foreach (var command in commands)
