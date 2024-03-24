@@ -36,7 +36,7 @@ namespace lrn.devgalop.projectcreator.app.Services
                 }
                 return new()
 				{
-					IsSucessfully = true,
+					IsSucceed = true,
 					Result = response
 				};
 			}
@@ -44,7 +44,7 @@ namespace lrn.devgalop.projectcreator.app.Services
 			{
 				return new()
 				{
-					IsSucessfully = false,
+					IsSucceed = false,
 					ErrorMessage = ex.ToString(),
 				};
 			}

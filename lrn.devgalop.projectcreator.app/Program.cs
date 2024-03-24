@@ -1,28 +1,34 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using lrn.devgalop.projectcreator.app.Services;
 
-
-
-using lrn.devgalop.projectcreator.app.Services;
 /**
-Parametros de entrada:
-1) NombreCarpeta (string) => D:\\Projects\\MiPrimerProyecto
-2) NombreProyecto (string) => lrn.mi_primer_proyecto
-3) TipoProyecto (string) => webapi, console, webapp, etc... (Consultar tipos de proyectos con el comando dotnet new list)
+Input parameters:
+1) Folder Path (string) => C:\\temp\\HelloWorld
+2) Project name (string) => hello_world
+3) Project type (string) => webapi, console, webapp, etc... (See more executing: dotnet new list)
 **/
 
 try
 {
-    //args = new[] { "D:\\Projects\\MiPrimerProyecto", "lrn.mi_primer_proyecto", "console" };
+    string folderSelected, projectName, projectType = string.Empty;
     if (args.Length < 3)
     {
-        throw new ArgumentNullException("No se han declarado todas las variables necesarias para el proceso");
+        Console.WriteLine("To ensure proper execution, you need to specify the folder path, project name, and project type.");
+        Console.WriteLine("What's the folder path: ");
+        folderSelected = Console.ReadLine() ?? throw new Exception("The folder path is invalid. Please provide a valid path.");
+        Console.WriteLine("Write the project name: ");
+        projectName = Console.ReadLine() ?? throw new Exception("The project name is invalid. Please provide a valid name.");
+        Console.WriteLine("Write the project type: ");
+        projectType = Console.ReadLine() ?? throw new Exception("The project type is invalid. Please provide a valid type. To see the project types, execute the command 'dotnet new list'.");
+    }else
+    {
+        folderSelected = args[0];
+        projectName = args[1];
+        projectType = args[2];
     }
-    string folderSelected = args[0];
-    Console.WriteLine($"Carpeta de proyecto: {folderSelected}");
-    string projectName = args[1];
-    Console.WriteLine($"Nombre del prooyecto: {projectName}");
-    string projectType = args[2];
-    Console.WriteLine($"Tipo de proyecto: {projectType}");
+    
+    Console.WriteLine($"Folder path selected: {folderSelected}");
+    Console.WriteLine($"Project name: {projectName}");
+    Console.WriteLine($"Project type: {projectType}");
 
     string projectTypeCap = char.ToUpper(projectType[0]) + projectType.Substring(1);
 
@@ -58,17 +64,16 @@ try
     foreach (var command in commands)
     {
         var commandResult = commandService.ExecuteCommand(folderSelected, command);
-        if (!commandResult.IsSucessfully)
+        if (!commandResult.IsSucceed)
         {
             throw new Exception(commandResult.ErrorMessage);
         }
-        Console.WriteLine($"Comando ejecutado con éxito. [COMANDO]:{command}");
+        Console.WriteLine($"Command executed successfully. [COMMAND]:{command}");
     }
 }
-catch (Exception)
+catch (Exception ex)
 {
-
-	throw;
+    Console.WriteLine($"Project cannot be created. Error: {ex}");
 }
 
 

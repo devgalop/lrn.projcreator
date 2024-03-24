@@ -8,7 +8,7 @@ namespace lrn.devgalop.projectcreator.app.Models
 {
     public class GenericResponse<T>
     {
-        public bool IsSucessfully { get; set; }
+        public bool IsSucceed { get; set; }
         public string? ErrorMessage { get; set; }
         public T? Result { get; set; }
     }
