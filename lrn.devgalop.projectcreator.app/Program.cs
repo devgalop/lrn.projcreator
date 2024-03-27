@@ -1,4 +1,5 @@
-﻿using lrn.devgalop.projectcreator.app.Services;
+﻿using lrn.devgalop.projectcreator.app.Extensions;
+using lrn.devgalop.projectcreator.app.Services;
 
 /**
 Input parameters:
@@ -10,22 +11,35 @@ Input parameters:
 try
 {
     string folderSelected, projectName, projectType = string.Empty;
-    if (args.Length < 3)
+    List<string> technologies = new() { "c#", "python" };
+    List<string> architectureTemplates = new() { "onion", "clean", "hexagonal", "layered" };
+    Dictionary<string, List<string>> projectTemplateFolders = new()
     {
-        Console.WriteLine("To ensure proper execution, you need to specify the folder path, project name, and project type.");
-        Console.WriteLine("What's the folder path: ");
-        folderSelected = Console.ReadLine() ?? throw new Exception("The folder path is invalid. Please provide a valid path.");
-        Console.WriteLine("Write the project name: ");
-        projectName = Console.ReadLine() ?? throw new Exception("The project name is invalid. Please provide a valid name.");
-        Console.WriteLine("Write the project type: ");
-        projectType = Console.ReadLine() ?? throw new Exception("The project type is invalid. Please provide a valid type. To see the project types, execute the command 'dotnet new list'.");
-    }else
+        {"onion", new(){ "Core", "Infrastructure", "ProjectType"}},
+        {"clean", new(){ "Domain","UseCases", "Infrastructure","ProjectType"}},
+        {"hexagonal", new(){ "Core", "Adpters","ProjectType"}},
+        {"layered", new(){ "Presentation","Domain","Infrastructure","ProjectType"}}
+    };
+    Dictionary<string, List<string>> projectTypes = new()
     {
-        folderSelected = args[0];
-        projectName = args[1];
-        projectType = args[2];
-    }
-    
+        {"c#", new(){ "webapi", "console", "webapp"}},
+        {"python", new(){"console","webapp"}}
+    };
+
+    var languageSelected = technologies.SelectMultipleChoice();
+    if(string.IsNullOrEmpty(languageSelected)) throw new Exception("A programming language must be selected");
+
+    var templateSelected = architectureTemplates.SelectMultipleChoice();
+    if(string.IsNullOrEmpty(templateSelected))templateSelected = "onion";
+
+    Console.WriteLine("To ensure proper execution, you need to specify the folder path, project name, and project type.");
+    Console.WriteLine("What's the folder path: ");
+    folderSelected = Console.ReadLine() ?? throw new Exception("The folder path is invalid. Please provide a valid path.");
+    Console.WriteLine("Write the project name: ");
+    projectName = Console.ReadLine() ?? throw new Exception("The project name is invalid. Please provide a valid name.");
+    Console.WriteLine("Write the project type: ");
+    projectType = Console.ReadLine() ?? throw new Exception("The project type is invalid. Please provide a valid type. To see the project types, execute the command 'dotnet new list'.");
+
     Console.WriteLine($"Folder path selected: {folderSelected}");
     Console.WriteLine($"Project name: {projectName}");
     Console.WriteLine($"Project type: {projectType}");
@@ -60,7 +74,7 @@ try
         $"cd > Dockerfile"
 
     };
-    
+
     foreach (var command in commands)
     {
         var commandResult = commandService.ExecuteCommand(folderSelected, command);
