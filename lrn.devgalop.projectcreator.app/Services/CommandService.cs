@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace lrn.devgalop.projectcreator.app.Services
 {
-    public class CommandService 
+    public class CommandService : ICommandService
     {
         public GenericResponse<ConsoleResponse> ExecuteCommand(string workingDirectory, string command)
         {
@@ -49,5 +49,10 @@ namespace lrn.devgalop.projectcreator.app.Services
 				};
 			}
         }
+    }
+
+    public interface ICommandService
+    {
+        GenericResponse<ConsoleResponse> ExecuteCommand(string workingDirectory, string command);
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using lrn.devgalop.projectcreator.app.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace lrn.devgalop.projectcreator.app.Extensions
 {
@@ -33,5 +35,11 @@ namespace lrn.devgalop.projectcreator.app.Extensions
             return result;
         }
         
+        public static void AddCustomServices(this IServiceCollection services)
+        {
+            services.AddTransient<ICommandService, CommandService>();
+            services.AddTransient<ITechnologiesService, TechnologiesService>();
+            services.AddTransient<ITemplateService, TemplateService>();
+        }
     }
 }

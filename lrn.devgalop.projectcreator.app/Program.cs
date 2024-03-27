@@ -1,5 +1,7 @@
 ﻿using lrn.devgalop.projectcreator.app.Extensions;
 using lrn.devgalop.projectcreator.app.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 /**
 Input parameters:
@@ -7,83 +9,34 @@ Input parameters:
 2) Project name (string) => hello_world
 3) Project type (string) => webapi, console, webapp, etc... (See more executing: dotnet new list)
 **/
+var builder = Host.CreateApplicationBuilder(args);
 
 try
 {
-    string folderSelected, projectName, projectType = string.Empty;
-    List<string> technologies = new() { "c#", "python" };
-    List<string> architectureTemplates = new() { "onion", "clean", "hexagonal", "layered" };
-    Dictionary<string, List<string>> projectTemplateFolders = new()
-    {
-        {"onion", new(){ "Core", "Infrastructure", "ProjectType"}},
-        {"clean", new(){ "Domain","UseCases", "Infrastructure","ProjectType"}},
-        {"hexagonal", new(){ "Core", "Adpters","ProjectType"}},
-        {"layered", new(){ "Presentation","Domain","Infrastructure","ProjectType"}}
-    };
-    Dictionary<string, List<string>> projectTypes = new()
-    {
-        {"c#", new(){ "webapi", "console", "webapp"}},
-        {"python", new(){"console","webapp"}}
-    };
+    builder.Services.AddCustomServices();
 
-    var languageSelected = technologies.SelectMultipleChoice();
+    var serviceProvider = builder.Services.BuildServiceProvider();
+    var technologiesService = (ITechnologiesService) serviceProvider.GetRequiredService(typeof(ITechnologiesService));
+    var commandService = (ICommandService) serviceProvider.GetRequiredService(typeof(ICommandService));
+    var templatesService = (ITemplateService) serviceProvider.GetRequiredService(typeof(ITemplateService));
+    var languageSelected = technologiesService.GetTechnology();
     if(string.IsNullOrEmpty(languageSelected)) throw new Exception("A programming language must be selected");
-
-    var templateSelected = architectureTemplates.SelectMultipleChoice();
-    if(string.IsNullOrEmpty(templateSelected))templateSelected = "onion";
-
-    Console.WriteLine("To ensure proper execution, you need to specify the folder path, project name, and project type.");
-    Console.WriteLine("What's the folder path: ");
-    folderSelected = Console.ReadLine() ?? throw new Exception("The folder path is invalid. Please provide a valid path.");
-    Console.WriteLine("Write the project name: ");
-    projectName = Console.ReadLine() ?? throw new Exception("The project name is invalid. Please provide a valid name.");
-    Console.WriteLine("Write the project type: ");
-    projectType = Console.ReadLine() ?? throw new Exception("The project type is invalid. Please provide a valid type. To see the project types, execute the command 'dotnet new list'.");
-
-    Console.WriteLine($"Folder path selected: {folderSelected}");
-    Console.WriteLine($"Project name: {projectName}");
-    Console.WriteLine($"Project type: {projectType}");
-
-    string projectTypeCap = char.ToUpper(projectType[0]) + projectType.Substring(1);
-
-    CommandService commandService = new CommandService();
-
-    if (!Directory.Exists(folderSelected))
+    GeneratorService generator;
+    switch(languageSelected)
     {
-        Directory.CreateDirectory(folderSelected);
+        case "c#":
+            generator = new CSharpGeneratorService(commandService, technologiesService, templatesService);
+            generator.RunCommands();
+        break;
+        case "python":
+            Console.WriteLine("Not implemented yet");
+        break;
+        default:
+            Console.WriteLine("Invalid option");
+        break;
     }
-
-    List<string> commands = new()
-    {
-        $"dotnet new sln -n {projectName}",
-        $"dotnet new classlib -n {projectName}.Core",
-        $"dotnet new classlib -n {projectName}.Infrastructure",
-        $"dotnet new {projectType} -n {projectName}.{projectTypeCap}",
-        $"dotnet new xunit -n {projectName}.Tests",
-        $"dotnet sln add ./{projectName}.Core/{projectName}.Core.csproj",
-        $"dotnet sln add ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet sln add ./{projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj",
-        $"dotnet sln add ./{projectName}.Tests/{projectName}.Tests.csproj",
-        $"dotnet add {projectName}.Core/{projectName}.Core.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet add {projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet add {projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
-        $"dotnet add {projectName}.Tests/{projectName}.Tests.csproj reference ./{projectName}.Infrastructure/{projectName}.Infrastructure.csproj",
-        $"dotnet add {projectName}.Tests/{projectName}.Tests.csproj reference ./{projectName}.Core/{projectName}.Core.csproj",
-        $"dotnet add {projectName}.Tests/{projectName}.Tests.csproj reference ./{projectName}.{projectTypeCap}/{projectName}.{projectTypeCap}.csproj",
-        $"mkdir {folderSelected}\\{projectName}.Core\\Extensions {folderSelected}\\{projectName}.Core\\Services {folderSelected}\\{projectName}.Core\\Interfaces {folderSelected}\\{projectName}.Core\\Models {folderSelected}\\Docker",
-        $"cd > Dockerfile"
-
-    };
-
-    foreach (var command in commands)
-    {
-        var commandResult = commandService.ExecuteCommand(folderSelected, command);
-        if (!commandResult.IsSucceed)
-        {
-            throw new Exception(commandResult.ErrorMessage);
-        }
-        Console.WriteLine($"Command executed successfully. [COMMAND]:{command}");
-    }
+    
+    
 }
 catch (Exception ex)
 {
